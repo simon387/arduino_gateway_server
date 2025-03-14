@@ -3,7 +3,7 @@
 
 // Definizione porta e pin
 WiFiServer server(80);
-const int relayPin = 7;  // Pin collegato al relè
+const int relayPin = 7;  // Pin collegato al rel&egrave;
 const int pulseTime = 100;  // Durata dell'impulso in millisecondi
 
 void setup() {
@@ -16,11 +16,11 @@ void setup() {
   Serial.println("Arduino UNO R4 WiFi - REST to Relay");
   Serial.println("======================================");
 
-  // Configurazione del pin del relè
-  Serial.println("[SETUP] Configurazione pin del relè...");
+  // Configurazione del pin del rel&egrave;
+  Serial.println("[SETUP] Configurazione pin del rel&egrave;...");
   pinMode(relayPin, OUTPUT);
-  digitalWrite(relayPin, LOW);  // Inizializza il relè spento
-  Serial.println("[SETUP] Pin relè configurato come LOW");
+  digitalWrite(relayPin, LOW);  // Inizializza il rel&egrave; spento
+  Serial.println("[SETUP] Pin rel&egrave; configurato come LOW");
 
   // Connessione alla rete WiFi
   Serial.println("[WIFI] Inizializzazione WiFi...");
@@ -57,7 +57,7 @@ void setup() {
 
   // Informazioni sul funzionamento
   Serial.println("======================================");
-  Serial.println("[INFO] Per attivare il relè, usa questo URL:");
+  Serial.println("[INFO] Per attivare il rel&egrave;, usa questo URL:");
   Serial.print("[INFO] http://");
   Serial.print(WiFi.localIP());
   Serial.println("/trigger");
@@ -117,9 +117,9 @@ void loop() {
 
             // Verifica se la richiesta contiene "trigger"
             if (requestLine.indexOf("GET /trigger") >= 0) {
-              Serial.println("[RELAY] Attivazione relè richiesta");
+              Serial.println("[RELAY] Attivazione rel&egrave; richiesta");
 
-              // Invia un impulso al pin del relè
+              // Invia un impulso al pin del rel&egrave;
               Serial.println("[RELAY] Impostazione pin a HIGH");
               digitalWrite(relayPin, HIGH);
 
@@ -159,18 +159,18 @@ void loop() {
             client.println("<strong>Indirizzo IP Arduino:</strong> " + ipString);
             client.println("<br><strong>URLs disponibili:</strong>");
             client.println("<br>- <a href='/'>/</a> - Questa pagina");
-            client.println("<br>- <a href='/trigger'>/trigger</a> - Attiva il relè");
+            client.println("<br>- <a href='/trigger'>/trigger</a> - Attiva il rel&egrave;");
             client.println("</div>");
 
             if (requestLine.indexOf("GET /trigger") >= 0) {
               client.println("<div class='info-box success'>");
               client.println("<h2>Comando inviato con successo</h2>");
-              client.println("<p>Il relè sul pin " + String(relayPin) + " è stato attivato per " + String(pulseTime) + " ms</p>");
+              client.println("<p>Il rel&egrave; sul pin " + String(relayPin) + " &egrave; stato attivato per " + String(pulseTime) + " ms</p>");
               client.println("</div>");
             } else {
               client.println("<h1>Arduino UNO R4 WiFi - REST Controller</h1>");
-              client.println("<p>Per attivare il relè, clicca sul pulsante qui sotto o visita <a href='/trigger'>/trigger</a></p>");
-              client.println("<button onclick='location.href=\"/trigger\"' style='padding: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;'>Attiva Relè</button>");
+              client.println("<p>Per attivare il rel&egrave;, clicca sul pulsante qui sotto o visita <a href='/trigger'>/trigger</a></p>");
+              client.println("<button onclick='location.href=\"/trigger\"' style='padding: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;'>Attiva rel&egrave;</button>");
             }
 
             client.println("</body></html>");

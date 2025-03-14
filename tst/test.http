@@ -1,2 +1,4 @@
 GET http://192.168.2.54/trigger
 
+###
+GET https://www.simonecelia.it/be/controllers/gate.php
