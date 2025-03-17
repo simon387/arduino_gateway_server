@@ -1,3 +1,4 @@
+#include <malloc.h>
 #include <WiFiS3.h>
 #include "secrets.h" // Include il file con le credenziali
 
@@ -5,6 +6,12 @@
 WiFiServer server(80);
 const int relayPin = 7;  // Pin collegato al rel&egrave;
 const int pulseTime = 100;  // Durata dell'impulso in millisecondi
+
+// Funzione per ottenere la memoria libera
+int freeMemory() {
+  char top;
+  return &top - reinterpret_cast<char*>(sbrk(0));
+}
 
 void setup() {
   // Imposta la seriale a 9600 baud per maggiore compatibilità
@@ -132,7 +139,67 @@ void loop() {
               digitalWrite(relayPin, LOW);
 
               Serial.println("[RELAY] Impulso completato");
-            } else {
+            } else if (requestLine.indexOf("GET /info") >= 0) {
+                Serial.println("[HTTP] Richiesta informazioni scheda");
+
+                // Invia una risposta HTTP standard
+                client.println("HTTP/1.1 200 OK");
+                client.println("Content-type:text/html");
+                client.println("Connection: close");
+                client.println();
+
+                // Invia la pagina HTML con le informazioni
+                client.println("<!DOCTYPE html><html>");
+                client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
+                client.println("<title>Arduino Info</title>");
+                client.println("<style>");
+                client.println("body { font-family: Arial, sans-serif; margin: 20px; }");
+                client.println(".info-box { background-color: #f0f0f0; padding: 10px; border-radius: 5px; margin-bottom: 15px; }");
+                client.println("table { width: 100%; border-collapse: collapse; }");
+                client.println("table, th, td { border: 1px solid #ddd; padding: 8px; }");
+                client.println("th { background-color: #f2f2f2; }");
+                client.println("</style>");
+                client.println("</head><body>");
+
+                client.println("<h1>Arduino UNO R4 WiFi - Informazioni</h1>");
+
+                // Box con informazioni sulla rete
+                client.println("<div class='info-box'>");
+                client.println("<h2>Informazioni di rete</h2>");
+                client.println("<table>");
+                client.println("<tr><th>Parametro</th><th>Valore</th></tr>");
+                client.println("<tr><td>Indirizzo IP</td><td>" + ipString + "</td></tr>");
+                client.println("<tr><td>Subnet Mask</td><td>" + WiFi.subnetMask().toString() + "</td></tr>");
+                client.println("<tr><td>Gateway</td><td>" + WiFi.gatewayIP().toString() + "</td></tr>");
+                client.println("<tr><td>DNS</td><td>" + WiFi.dnsIP().toString() + "</td></tr>");
+                client.println("<tr><td>MAC Address</td><td>" + WiFi.macAddress() + "</td></tr>");
+                client.println("<tr><td>SSID</td><td>" + String(WiFi.SSID()) + "</td></tr>");
+                client.println("<tr><td>BSSID</td><td>" + String(WiFi.BSSID()) + "</td></tr>");
+                client.println("<tr><td>Potenza segnale (RSSI)</td><td>" + String(WiFi.RSSI()) + " dBm</td></tr>");
+                client.println("<tr><td>Stato connessione</td><td>" + String(WiFi.status()) + "</td></tr>");
+                client.println("</table>");
+                client.println("</div>");
+
+                // Box con informazioni sul sistema
+                client.println("<div class='info-box'>");
+                client.println("<h2>Informazioni di sistema</h2>");
+                client.println("<table>");
+                client.println("<tr><th>Parametro</th><th>Valore</th></tr>");
+                client.println("<tr><td>Versione firmware WiFi</td><td>" + String(WiFi.firmwareVersion()) + "</td></tr>");
+                client.println("<tr><td>Tempo di attività</td><td>" + String(millis() / 1000) + " secondi</td></tr>");
+                client.println("<tr><td>Memoria libera</td><td>" + String(freeMemory()) + " bytes</td></tr>");
+                client.println("<tr><td>Pin relè</td><td>" + String(relayPin) + "</td></tr>");
+                client.println("<tr><td>Durata impulso</td><td>" + String(pulseTime) + " ms</td></tr>");
+                client.println("</table>");
+                client.println("</div>");
+
+                // Aggiungi un link per tornare alla home
+                client.println("<p><a href='/'>&laquo; Torna alla pagina principale</a></p>");
+
+                client.println("</body></html>");
+                Serial.println("[HTTP] Risposta info inviata");
+              }
+             else {
               Serial.println("[HTTP] Richiesta pagina principale");
             }
 
@@ -160,9 +227,11 @@ void loop() {
             client.println("<br><strong>URLs disponibili:</strong>");
             client.println("<br>- <a href='/'>/</a> - Questa pagina");
             client.println("<br>- <a href='/trigger'>/trigger</a> - Attiva il rel&egrave;");
+            client.println("<br>- <a href='/info'>/info</a> - Informazioni sulla scheda");
             client.println("</div>");
 
             if (requestLine.indexOf("GET /trigger") >= 0) {
+              client.println("debug");
               client.println("<div class='info-box success'>");
               client.println("<h2>Comando inviato con successo</h2>");
               client.println("<p>Il rel&egrave; sul pin " + String(relayPin) + " &egrave; stato attivato per " + String(pulseTime) + " ms</p>");

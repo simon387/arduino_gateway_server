@@ -1,3 +1,6 @@
+Version 1.0.2
+- added /info route
+
 Version 1.0.1
 - added test
 - fix html
