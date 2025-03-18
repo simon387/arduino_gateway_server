@@ -1,3 +1,6 @@
+Version 1.0.3
+- fixed compiles errors
+
 Version 1.0.2
 - added /info route
 
